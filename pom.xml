@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.evosuite.demo</groupId>
+    <artifactId>bank-account-evosuite</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>BankAccount EvoSuite Demo</name>
+    <description>
+        Proiect demo pentru generarea automata de teste cu EvoSuite.
+        Folosit ca studiu de caz pentru cursul FMSE (Formal Methods in Software Engineering).
+    </description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.jupiter.version>5.10.0</junit.jupiter.version>
+        <junit4.version>4.13.2</junit4.version>
+        <evosuite.version>1.2.0</evosuite.version>
+    </properties>
+
+    <dependencies>
+        <!-- JUnit 5 (pentru teste manuale) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit 4 (EvoSuite genereaza teste JUnit 4 implicit) -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit4.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Surefire: ruleaza toate testele -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*ESTest.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin EvoSuite pentru generarea automata a testelor -->
+            <plugin>
+                <groupId>org.evosuite.plugins</groupId>
+                <artifactId>evosuite-maven-plugin</artifactId>
+                <version>${evosuite.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare</goal>
+                        </goals>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Criteriu de acoperire: BRANCH (implicit include si STATEMENT) -->
+                    <criterion>BRANCH:LINE:METHOD</criterion>
+                    <!-- Buget de timp in secunde per clasa -->
+                    <searchBudget>60</searchBudget>
+                    <!-- Dimensiunea populatiei GA -->
+                    <populationSize>50</populationSize>
+                    <!-- Directorul de output pentru testele generate -->
+                    <testDir>evosuite-tests</testDir>
+                </configuration>
+            </plugin>
+
+            <!-- JaCoCo pentru rapoarte de coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Repository EvoSuite (nu este pe Maven Central) -->
+    <repositories>
+        <repository>
+            <id>EvoSuite</id>
+            <name>EvoSuite Repository</name>
+            <url>https://www.evosuite.org/m2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>EvoSuite</id>
+            <name>EvoSuite Repository</name>
+            <url>https://www.evosuite.org/m2</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
